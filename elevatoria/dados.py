@@ -34,7 +34,8 @@ LINHA: re.Pattern = re.compile(
     r"(?P<hora>\d{2}:\d{2}:\d{2})\s+"
     r"(?P<nivel>[A-Z]+)\s+"
     r"(?P<tag>[A-Z]{1,2}\d{1,3})\s+"
-    r"(?P<resto>.*)"
+    r"(?P<resto>.*)",
+    re.VERBOSE
 )
 
 
@@ -241,12 +242,10 @@ def medir_tempos(contagens: np.ndarray, k: int = 10) -> dict[str, float]:
     """
     tempos = {}
     convertido_list = contagens.tolist()
-    for f in [converter_laco, converter_compreensao, converter_map, converter_vetorizado]:
-        if f is converter_vetorizado:
-            convertido_np = np.asanyarray(contagens)
-            tempos["vetorizado"] = cronometrar(f, convertido_np, k=k)
-        else:
-            tempos[f.__name__.replace("converter_", "")] = cronometrar(f, convertido_list, k=k)
-        # O método especial __name__ retorna o nome da função como uma string.
-        # O método replace é usado aqui para substituir a substring "converter_" por uma string vazia, simplificando o nome da chave no dicionário tempos.
-    return tempos
+    
+    return {
+        "laço": cronometrar(converter_laco, convertido_list, k=k),
+        "compreensão": cronometrar(converter_compreensao, convertido_list, k=k),
+        "map+lambda": cronometrar(converter_map, convertido_list, k=k),
+        "vetorizado": cronometrar(converter_vetorizado, np.asanyarray(contagens), k=k),
+    }
