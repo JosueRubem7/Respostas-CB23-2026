@@ -24,7 +24,6 @@ errados["PT102"](4095) dá 409,5 porque a funções só são avaliadas após a c
 
 ### R4 — Escala nominal
 
-<!-- Hipótese para a diferença da Etapa 2(f) e onde, no código da base, está a explicação. -->
 Há uma grande diferença entre a pressão nominal e a pressão real (maior que 100) porque na conversão é realizada apenas uma regra de três simples, multiplicando c por 600/4095, enquanto o valor real é gerado por um arcoseno multiplicado por uma constante. A conversão supõe que a conversão é linear, mas ela não é.
 O valor real é definido da seguinte forma no arquivo simulador.py:\
 `def c_real(p):`\
@@ -33,7 +32,7 @@ O valor real é definido da seguinte forma no arquivo simulador.py:\
 
 ### R5 — Previsão × medição (Etapa 3)
 
-Previsões registradas no commit: <!-- cole o hash curto do commit de previsões -->
+Previsões registradas no commit: 1934c57
 
 | Grandeza | Previsão | Medido |
 | --- | --- | --- |
@@ -41,7 +40,7 @@ Previsões registradas no commit: <!-- cole o hash curto do commit de previsões
 | Tempo do laço / tempo vetorizado | 200 ms / 20 ms = 10 | 0.093 ms / 0.006 ms = 15.5 |
 | Tempo da compreensão / tempo do laço | 200 ms / 50 ms = 4 | 0.093 ms / 0.082 ms = 1.134 |
 
-<!-- Explique a maior diferença entre previsão e medição; por que uint16 * 20 dá 16364; que dtype você escolheria para contagens e para kPa. -->
+Como tanto compreensão como o laço `for` iteram em bytecode Python (um elemento de cada vez), a diferença de tempo entre elas não é tão grande quanto previsto, apesar do ganho de desempenho da compreensão por evitar o método `.append()`. O vetorizado, por outro lado, roda em <b>C compilado<b>, o que o torna ainda mais rápido do que o previsto. A previsão de memória foi bem acurada. O valor `uint16 * 20` resulta em 16364 devido ao *overflow* modular de 16 bits (81900 mod 65536). Para contagens, usaria `uint16` para economia de memória; para kPa, usaria `float32`, por ser eficiente com ponto flutuante.
 
 ### R6 — Tipos da SerieTemporal (Etapa 4d)
 

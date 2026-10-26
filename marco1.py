@@ -111,10 +111,6 @@ def etapa3() -> None:
     # (a) Memória: imprima uma tabela com estrutura, bytes por elemento, bytes totais e a
     #     razão em relação à lista.
     memoria = medir_memoria(contagens)
-    # PREVISÕES:
-    # uint16: 2 bytes, 2_000_000 bytes
-    # list: 36 bytes, 36_000_000 bytes
-    # Razão = 18.0
 
     print(f"Memória (bytes): uint16={memoria['uint16']}, list={memoria['list']}, razão={memoria['list']/memoria['uint16']:.1f}")
     assert memoria["uint16"] == 2_000_000
@@ -126,7 +122,10 @@ def etapa3() -> None:
     # laço: 200 ms
     # vetorizado: 20 ms
     # aceleração = 10
-    print(f"Tempos (ms): laco={tempos['laco']:.3f}, vetorizado={tempos['vetorizado']:.3f}")
+
+    # compreensão: 50 ms
+    # aceleração = 4
+    print(f"Tempos (ms): laco={tempos['laco']:.3f}, vetorizado={tempos['vetorizado']:.3f}, compreensao={tempos['compreensao']:.3f}")
 
     assert tempos["laco"] / tempos["vetorizado"] >= 5
 
