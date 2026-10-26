@@ -7,23 +7,29 @@ os números da sua execução; cada resposta cabe em até 6 linhas, além das ta
 
 ### Ambiente
 
-<!-- Cole aqui a saída de `which python` e da Etapa 0 do `python marco1.py`. -->
+- <b>Saída do which python</b>: /c/Users/josue/OneDrive/Documentos/Projeto Prog 2/Respostas-CB23-2026/.venv/Scripts/python
+- <b>Saída da Etapa 0</b>: Python 3.14.3 | NumPy 2.5.4 | fornecido 1.0
 
 ### R1 — Expressões regulares
 
-<!-- Uma string que re.match aceita e re.fullmatch rejeita com o padrão de tag; consequência para valida_tag. -->
+"PT1012". Passa no re.match porque pode-se formar uma tag correta usando do primeiro ao penúltimo caractere ("PT101"), já que o último é ignorado pelo re.match; mas re.fullmatch verificaria a linha toda e indicaria que a string não é uma tag válida. Isso torna a função valida_tag muito mais segura e rígida. Erros como um espaço em "PT101 " não são desconsiderados por usar re.fullmatch.
 
 ### R2 — Linhas inválidas
 
-<!-- Por que ler_log devolve as linhas descartadas; uma situação real em que descartar em silêncio esconderia um problema. -->
+Para que se possa avaliar quais instrumentos falharam nas verificações e realizar correções. Se um deles estivesse com defeito e a função ler_log não retornasse as linhas inválidas, um diagnóstico de um problema na estação seria dificultado.
 
 ### R3 — Late binding
 
-<!-- Por que errados["PT102"](4095) dá 409,5 e por que a sua criar_conversores não tem o problema. -->
+errados["PT102"](4095) dá 409,5 porque a funções só são avaliadas após a compreensão do dicionário, quando só há acesso ao fator de conversão da última tag ("FT201"), que é 0.1. A minha função não tem esse problema a implementação especifica para cada função qual é o fator a ser utilizado através de um argumento: `{tag: (lambda c, fator=fator: c * fator) for tag, fator in escalas.items()}`. <b>fator=fator</b> deixa claro para a função que a cada avaliação de tag há um fator diferente.
 
 ### R4 — Escala nominal
 
 <!-- Hipótese para a diferença da Etapa 2(f) e onde, no código da base, está a explicação. -->
+Há uma grande diferença entre a pressão nominal e a pressão real (maior que 100) porque na conversão é realizada apenas uma regra de três simples, multiplicando c por 600/4095, enquanto o valor real é gerado por um arcoseno multiplicado por uma constante. A conversão supõe que a conversão é linear, mas ela não é.
+O valor real é definido da seguinte forma no arquivo simulador.py:\
+`def c_real(p):`\
+&emsp;`    """Contagens do A/D (12 bits) que correspondem à pressão p (kPa)."""`\
+&emsp;`    return 4095.0 * (2.0 / np.pi) * np.arcsin(np.asarray(p, dtype=float) / 600.0)`
 
 ### R5 — Previsão × medição (Etapa 3)
 
@@ -31,9 +37,9 @@ Previsões registradas no commit: <!-- cole o hash curto do commit de previsões
 
 | Grandeza | Previsão | Medido |
 | --- | --- | --- |
-| Memória da lista / memória do `uint16` | | |
-| Tempo do laço / tempo vetorizado | | |
-| Tempo da compreensão / tempo do laço | | |
+| Memória da lista / memória do `uint16` | 36_000_000 bytes / 2_000_000 bytes = 18 | 36000056 bytes / 2000000 bytes = 18.000028 |
+| Tempo do laço / tempo vetorizado | 200 ms / 20 ms = 10 | 0.093 ms / 0.006 ms = 15.5 |
+| Tempo da compreensão / tempo do laço | 200 ms / 50 ms = 4 | 0.093 ms / 0.082 ms = 1.134 |
 
 <!-- Explique a maior diferença entre previsão e medição; por que uint16 * 20 dá 16364; que dtype você escolheria para contagens e para kPa. -->
 
