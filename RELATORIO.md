@@ -40,7 +40,7 @@ Previsões registradas no commit: 1934c57
 | Tempo do laço / tempo vetorizado | 200 ms / 20 ms = 10 | 0.093 ms / 0.006 ms = 15.5 |
 | Tempo da compreensão / tempo do laço | 200 ms / 50 ms = 4 | 0.093 ms / 0.082 ms = 1.134 |
 
-Como tanto compreensão como o laço `for` iteram em bytecode Python (um elemento de cada vez), a diferença de tempo entre elas não é tão grande quanto previsto, apesar do ganho de desempenho da compreensão por evitar o método `.append()`. O vetorizado, por outro lado, roda em <b>C compilado<b>, o que o torna ainda mais rápido do que o previsto. A previsão de memória foi bem acurada. O valor `uint16 * 20` resulta em 16364 devido ao *overflow* modular de 16 bits (81900 mod 65536). Para contagens, usaria `uint16` para economia de memória; para kPa, usaria `float32`, por ser eficiente com ponto flutuante.
+Como tanto compreensão como o laço `for` iteram em bytecode Python (um elemento de cada vez), a diferença de tempo entre elas não é tão grande quanto previsto, apesar do ganho de desempenho da compreensão por evitar o método `.append()`. O vetorizado, por outro lado, roda em **C compilado**, o que o torna ainda mais rápido do que o previsto. A previsão de memória foi bem acurada. O valor `uint16 * 20` resulta em 16364 devido ao *overflow* modular de 16 bits (81900 mod 65536). Para contagens, usaria `uint16` para economia de memória; para kPa, usaria `float32`, por ser eficiente com ponto flutuante.
 
 ### R6 — Tipos da SerieTemporal (Etapa 4d)
 
@@ -57,3 +57,10 @@ Como tanto compreensão como o laço `for` iteram em bytecode Python (um element
 ### R7 — Issue #4
 
 <!-- Sintoma; o teste de regressão (nome); a causa, em termos da soma acumulada; a correção; por que os testes de aceitação não pegaram o defeito; mais um caso que eles não cobrem e qual teste seu o cobre. -->
+
+- **Sintoma:** A função media_movel devolvia $n - j$ valores ao invés de $n - j + 1$ (por exemplo, 570 ao invés de 571, como no relato); 
+- **Teste de Regressão:** `test_media_movel_janela_2`;
+- **Causa:** O fatiamento original `acumulada[janela:] - acumulada[:-janela]` ignorava o índice `janela - 1` (soma da primeira janela), começando em `janela`. Como não havia um elemento na posição anterior ao início do vetor para subtrair, a primeira janela era descartada.
+- **Correção:** Inserção do valor `0.0` no início do vetor (`np.insert(np.cumsum(self), 0, 0.0)`). Isso permitiu que a fatiação `acumulada[janela:] - acumulada[:-janela]` funcionasse para a primeira janela e a função pudesse retornar $n - j +1$ valores.
+- **Por que não foi detectado pelos testes:** Os testes não checavam o tamanho (`len()`) da SerieTemporal retornada.
+- **Caso extra não coberto:** O comportamento de `media_movel` quando a janela é unitária (`janela = 1`), que deve retornar uma cópia idêntica da série original em tamanho e valores, coberto pelo meu teste `test_media_movel_janela_1`.
