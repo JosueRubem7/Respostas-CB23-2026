@@ -32,7 +32,7 @@ from fornecido.cronometro import cronometrar
 LINHA: re.Pattern = re.compile(
     r"(?P<data>\d{4}-\d{2}-\d{2})\s+"
     r"(?P<hora>\d{2}:\d{2}:\d{2})\s+"
-    r"(?P<nivel>[A-Z]+)\s+"
+    r"(?P<nivel>INFO|ALARME)\s+"
     r"(?P<tag>[A-Z]{1,2}\d{1,3})\s+"
     r"(?P<resto>.*)",
     re.VERBOSE
